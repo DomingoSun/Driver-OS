@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import useStore from '../store/useStore'
@@ -12,19 +12,6 @@ import {
   getWeeklyRevenueData,
   getExpenseBreakdown,
 } from '../lib/calculations'
-
-function LiveClock() {
-  const [time, setTime] = useState(dayjs().format('HH:mm:ss'))
-  useEffect(() => {
-    const t = setInterval(() => setTime(dayjs().format('HH:mm:ss')), 1000)
-    return () => clearInterval(t)
-  }, [])
-  return (
-    <span className="text-accent-blue font-bold tabular-nums text-glow-blue animate-pulse-glow">
-      {time}
-    </span>
-  )
-}
 
 function PlatformBadge({ platform, records }) {
   const todayStr = dayjs().format('YYYY-MM-DD')
@@ -76,21 +63,18 @@ export default function Dashboard() {
     <div className="min-h-full px-4 pt-safe">
       {/* Header */}
       <header className="flex items-center justify-between py-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-accent-blue text-lg font-bold tracking-widest uppercase text-glow-blue">
-              Driver
-            </span>
-            <span className="text-text-primary text-lg font-bold tracking-widest uppercase">
-              OS
-            </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse flex-shrink-0" />
-          </div>
-          <p className="text-text-muted text-xs mt-0.5">
-            {today} · {weekday}
-          </p>
+        <div className="flex items-center gap-2">
+          <span className="text-accent-blue text-lg font-bold tracking-widest uppercase text-glow-blue">
+            Driver
+          </span>
+          <span className="text-text-primary text-lg font-bold tracking-widest uppercase">
+            OS
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse flex-shrink-0" />
         </div>
-        <LiveClock />
+        <p className="text-text-muted text-xs">
+          {today} · {weekday}
+        </p>
       </header>
 
       {/* KPI Cards */}

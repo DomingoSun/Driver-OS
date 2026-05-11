@@ -34,7 +34,7 @@ function PlatformRow({ platform, onEdit, onDelete }) {
 }
 
 export default function Settings() {
-  const { platforms, settings, upsertPlatform, deletePlatform, updateSettings } = useStore()
+  const { platforms, settings, upsertPlatform, deletePlatform, updateSettings, resetAll, clearAll } = useStore()
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ name: '', commission: '', color: PRESET_COLORS[0] })
   const [webhookUrl, setWebhookUrl] = useState(settings.webhookUrl ?? '')
@@ -184,6 +184,25 @@ export default function Settings() {
       >
         {saved ? '✓ 已儲存' : '儲存設定'}
       </button>
+
+      <Section title="資料管理 (進階)">
+        <button
+          onClick={() => {
+            if (confirm('確定要重設為範例資料？這將覆蓋所有現有記錄。')) resetAll()
+          }}
+          className="bg-surface border border-border-dim rounded-2xl px-4 py-3 text-text-muted text-sm hover:border-accent-yellow hover:text-accent-yellow transition-colors text-left"
+        >
+          重設為範例資料
+        </button>
+        <button
+          onClick={() => {
+            if (confirm('確定要清空所有記帳記錄？此動作無法復原。')) clearAll()
+          }}
+          className="bg-surface border border-border-dim rounded-2xl px-4 py-3 text-text-muted text-sm hover:border-accent-red hover:text-accent-red transition-colors text-left"
+        >
+          清空所有記帳記錄
+        </button>
+      </Section>
 
       <div className="mt-6 text-center">
         <p className="text-text-dim text-xs">DriverOS v1.0.0</p>

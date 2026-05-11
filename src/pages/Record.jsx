@@ -61,13 +61,14 @@ export default function Record() {
     }
     addRecord(record)
     setSaved(true)
+    setAmount('')
+    setNote('')
+    setKwh('')
+    setOdometer('')
     setTimeout(() => {
       setSaved(false)
-      setAmount('')
-      setNote('')
-      setKwh('')
-      setOdometer('')
-    }, 1200)
+      navigate('/history')
+    }, 800)
   }
 
   return (
