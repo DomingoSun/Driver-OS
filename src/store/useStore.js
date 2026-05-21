@@ -51,6 +51,11 @@ const SEED_DATA = {
   },
 }
 
+function genId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
+  return `id_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+}
+
 function mergeWithSeed(saved) {
   if (!saved) return SEED_DATA
   return {
@@ -62,71 +67,66 @@ function mergeWithSeed(saved) {
 
 const initial = mergeWithSeed(loadState())
 
-function genId() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
-  return `id_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
-}
-
-const useStore = create((set, get) => ({
+const useStore = create((set) => ({
   ...initial,
 
-  addRecord: (record) => {
-    const newRecord = { ...record, id: genId() }
-    const s = get()
-    const records = [newRecord, ...s.records]
-    saveState({ records, platforms: s.platforms, settings: s.settings })
-    set({ records })
-    return newRecord
-  },
+  addRecord: (record) =>
+    set((s) => {
+      const records = [{ ...record, id: genId() }, ...s.records]
+      saveState({ records, platforms: s.platforms, settings: s.settings })
+      return { records }
+    }),
 
-  deleteRecord: (id) => {
-    const s = get()
-    const records = s.records.filter((r) => r.id !== id)
-    saveState({ records, platforms: s.platforms, settings: s.settings })
-    set({ records })
-  },
+  updateRecord: (id, patch) =>
+    set((s) => {
+      const records = s.records.map((r) => (r.id === id ? { ...r, ...patch } : r))
+      saveState({ records, platforms: s.platforms, settings: s.settings })
+      return { records }
+    }),
 
-  upsertPlatform: (platform) => {
-    const s = get()
-    const exists = s.platforms.find((p) => p.id === platform.id)
-    const platforms = exists
-      ? s.platforms.map((p) => (p.id === platform.id ? { ...p, ...platform } : p))
-      : [...s.platforms, { ...platform, id: platform.id ?? genId() }]
-    saveState({ records: s.records, platforms, settings: s.settings })
-    set({ platforms })
-  },
+  deleteRecord: (id) =>
+    set((s) => {
+      const records = s.records.filter((r) => r.id !== id)
+      saveState({ records, platforms: s.platforms, settings: s.settings })
+      return { records }
+    }),
 
-  deletePlatform: (id) => {
-    const s = get()
-    const platforms = s.platforms.filter((p) => p.id !== id)
-    saveState({ records: s.records, platforms, settings: s.settings })
-    set({ platforms })
-  },
+  upsertPlatform: (platform) =>
+    set((s) => {
+      const exists = s.platforms.find((p) => p.id === platform.id)
+      const platforms = exists
+        ? s.platforms.map((p) => (p.id === platform.id ? { ...p, ...platform } : p))
+        : [...s.platforms, { ...platform, id: platform.id ?? genId() }]
+      saveState({ records: s.records, platforms, settings: s.settings })
+      return { platforms }
+    }),
 
-  updateSettings: (patch) => {
-    const s = get()
-    const settings = { ...s.settings, ...patch }
-    saveState({ records: s.records, platforms: s.platforms, settings })
-    set({ settings })
-  },
+  deletePlatform: (id) =>
+    set((s) => {
+      const platforms = s.platforms.filter((p) => p.id !== id)
+      saveState({ records: s.records, platforms, settings: s.settings })
+      return { platforms }
+    }),
 
-  resetAll: () => {
-    saveState({
-      records: SEED_DATA.records,
-      platforms: SEED_DATA.platforms,
-      settings: SEED_DATA.settings,
-    })
-    set({
-      records: SEED_DATA.records,
-      platforms: SEED_DATA.platforms,
-      settings: SEED_DATA.settings,
-    })
-  },
+  updateSettings: (patch) =>
+    set((s) => {
+      const settings = { ...s.settings, ...patch }
+      saveState({ records: s.records, platforms: s.platforms, settings })
+      return { settings }
+    }),
 
-  clearAll: () => {
-    saveState({ records: [], platforms: SEED_DATA.platforms, settings: get().settings })
-    set({ records: [] })
-  },
+  resetAll: () =>
+    set(() => {
+      saveState(SEED_DATA)
+      return { ...SEED_DATA }
+    }),
+
+  clearAll: () =>
+    set((s) => {
+      const next = { records: [], platforms: s.platforms, settings: s.settings }
+      saveState(next)
+      return { records: [] }
+    }),
 }))
 
 export default useStore
