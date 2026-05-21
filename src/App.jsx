@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Dashboard from './pages/Dashboard'
 import Record from './pages/Record'
@@ -7,7 +7,7 @@ import Settings from './pages/Settings'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="relative flex flex-col h-full bg-base scan-line">
         <main className="flex-1 overflow-y-auto pb-20 scrollbar-hide">
           <Routes>
@@ -20,6 +20,6 @@ export default function App() {
         </main>
         <BottomNav />
       </div>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
