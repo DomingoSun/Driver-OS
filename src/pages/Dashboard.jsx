@@ -72,9 +72,12 @@ export default function Dashboard() {
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse flex-shrink-0" />
         </div>
-        <p className="text-text-muted text-xs">
-          {today} · {weekday}
-        </p>
+        <div className="text-right">
+          <p className="text-text-muted text-xs">{today} · {weekday}</p>
+          <p className="text-accent-blue text-[10px] tabular-nums">
+            共 <span className="font-bold">{records.length}</span> 筆記錄
+          </p>
+        </div>
       </header>
 
       {/* KPI Cards */}

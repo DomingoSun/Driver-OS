@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import dayjs from 'dayjs'
 import useStore from '../store/useStore'
 
@@ -166,6 +166,21 @@ export default function History() {
   const [filter, setFilter] = useState('all')
   const [editingId, setEditingId] = useState(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [highlightId, setHighlightId] = useState(null)
+
+  useEffect(() => {
+    try {
+      const id = sessionStorage.getItem('driveros_last_added')
+      if (id) {
+        setHighlightId(id)
+        sessionStorage.removeItem('driveros_last_added')
+        const t = setTimeout(() => setHighlightId(null), 3000)
+        return () => clearTimeout(t)
+      }
+    } catch {
+      // sessionStorage unavailable
+    }
+  }, [])
 
   const filtered = useMemo(() => {
     const sorted = [...records].sort((a, b) => (a.date < b.date ? 1 : -1))
@@ -189,6 +204,13 @@ export default function History() {
         <h1 className="text-text-primary text-lg font-bold tracking-widest uppercase">記帳歷史</h1>
         <p className="text-text-muted text-xs mt-0.5">共 {records.length} 筆記錄</p>
       </header>
+
+      {highlightId && (
+        <div className="mb-3 flex items-center gap-2 bg-accent-green/10 border border-accent-green/40 rounded-xl px-3 py-2 animate-pulse-glow">
+          <span className="text-accent-green">✓</span>
+          <span className="text-accent-green text-xs font-medium">新增成功！已顯示於下方（綠色邊框）</span>
+        </div>
+      )}
 
       {/* Filter tabs */}
       <div className="flex bg-surface-2 rounded-2xl p-1 mb-4">
@@ -222,7 +244,11 @@ export default function History() {
               {/* Record row */}
               <div
                 className={`bg-surface border rounded-2xl px-4 py-3 flex items-center gap-3 transition-colors ${
-                  isEditing ? 'border-accent-blue/40' : 'border-border-dim'
+                  isEditing
+                    ? 'border-accent-blue/40'
+                    : highlightId === r.id
+                    ? 'border-accent-green glow-green'
+                    : 'border-border-dim'
                 }`}
               >
                 <div

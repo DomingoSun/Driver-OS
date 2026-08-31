@@ -70,12 +70,15 @@ const initial = mergeWithSeed(loadState())
 const useStore = create((set) => ({
   ...initial,
 
-  addRecord: (record) =>
+  addRecord: (record) => {
+    const newRecord = { ...record, id: genId() }
     set((s) => {
-      const records = [{ ...record, id: genId() }, ...s.records]
+      const records = [newRecord, ...s.records]
       saveState({ records, platforms: s.platforms, settings: s.settings })
       return { records }
-    }),
+    })
+    return newRecord
+  },
 
   updateRecord: (id, patch) =>
     set((s) => {

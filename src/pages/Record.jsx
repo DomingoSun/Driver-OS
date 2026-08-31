@@ -78,7 +78,12 @@ export default function Record() {
         : {}),
     }
 
-    addRecord(record)
+    const created = addRecord(record)
+    try {
+      sessionStorage.setItem('driveros_last_added', created?.id ?? '')
+    } catch {
+      // sessionStorage unavailable — non-critical
+    }
     resetForm()
     setSaved(true)
     timerRef.current = setTimeout(() => {
